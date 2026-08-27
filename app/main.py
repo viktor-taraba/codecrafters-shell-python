@@ -25,7 +25,6 @@ def is_executable(file_name):
 
 
 def main():
-    # TODO: Uncomment the code below to pass the first stage
     while True:
         sys.stdout.write("$ ")
         command = input().strip()
