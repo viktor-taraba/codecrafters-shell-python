@@ -17,7 +17,7 @@ def main():
             if command_param in builtin_commands:
                 print(f"{command_param} is a shell builtin")
             else:
-                print(f"{command_param}: command not found")
+                print(f"{command_param}: not found")
         else:
             sys.stdout.write(f"{command}: command not found\n")
 
