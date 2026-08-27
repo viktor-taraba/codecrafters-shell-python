@@ -3,7 +3,7 @@ import os
 import itertools 
 import subprocess
 
-builtin_commands = ["exit", "echo", "type"]
+builtin_commands = ["exit", "echo", "type", "pwd"]
 
 
 def is_executable(file_name):
@@ -33,6 +33,8 @@ def main():
             break
         elif command.startswith("echo "):
             print(command[5:])
+        elif command.startswith("pwd"):
+            print(os.getcwd())
 
         elif command.startswith("type "):
             command_param = command[5:].strip()
