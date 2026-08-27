@@ -1,4 +1,5 @@
 import sys
+import os
 
 builtin_commands = ["exit", "echo", "type"]
 
@@ -10,14 +11,31 @@ def main():
 
         if command.lower() == "exit":
             break
+
         elif command.startswith("echo "):
             print(command[5:])
+
         elif command.startswith("type "):
             command_param = command[5:].strip()
             if command_param in builtin_commands:
                 print(f"{command_param} is a shell builtin")
+            
+            # locate executable files
             else:
+            # go through every directory in PATH 
+                PATH = os.environ.get('PATH').split(os.pathsep)
+                for directory in PATH:
+                    file_path = directory+command_param
+                    if os.path.isfile(file_path):
+                        if os.access(file_path, os.X_OK):
+                            print(f"{command_param} is {file_path}")
+                            break
+                        else:
+                            pass
+                    else:
+                        pass
                 print(f"{command_param}: not found")
+
         else:
             sys.stdout.write(f"{command}: command not found\n")
 
