@@ -1,5 +1,6 @@
 import sys
 import os
+import itertools 
 
 builtin_commands = ["exit", "echo", "type"]
 
@@ -24,8 +25,13 @@ def main():
             else:
             # go through every directory in PATH 
                 PATH = os.environ.get('PATH').split(os.pathsep)
-                for directory in PATH:
-                    file_path = os.path.join(directory, command_param)
+                extensions = [''] # Always check the exact name first
+                path_extensions = os.environ.get('PATHEXT', '.COM;.EXE;.BAT;.CMD').split(os.pathsep)
+                extensions.extend([ext.lower() for ext in path_extensions])
+
+                for directory, ext in itertools.product(PATH, extensions):
+                    file_path = os.path.join(directory, command_param + ext)
+
                     if os.path.isfile(file_path) and os.access(file_path, os.X_OK):
                         print(f"{command_param} is {file_path}")
                         break
