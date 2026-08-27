@@ -25,16 +25,14 @@ def main():
             # go through every directory in PATH 
                 PATH = os.environ.get('PATH').split(os.pathsep)
                 for directory in PATH:
-                    file_path = directory+command_param
-                    if os.path.isfile(file_path):
-                        if os.access(file_path, os.X_OK):
-                            print(f"{command_param} is {file_path}")
-                            break
-                        else:
-                            pass
+                    file_path = os.path.join(directory, command_param)
+                    if os.path.isfile(file_path) and os.access(file_path, os.X_OK):
+                        print(f"{command_param} is {file_path}")
+                        break
                     else:
                         pass
-                print(f"{command_param}: not found")
+                else: # no file located in the fir loop
+                    print(f"{command_param}: not found")
 
         else:
             sys.stdout.write(f"{command}: command not found\n")
