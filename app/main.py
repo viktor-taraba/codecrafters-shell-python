@@ -2,14 +2,15 @@ import sys
 import os
 import itertools 
 import subprocess
+import shlex
 
-builtin_commands = ["exit", "echo", "type", "pwd"]
+builtin_commands = ["exit", "echo", "type", "pwd", "cd"]
 
 
 def is_executable(file_name):
     """helper function to check whether file_name is executable program"""
 
-    PATH = os.environ.get('PATH').split(os.pathsep)
+    PATH = os.environ.get('PATH', '').split(os.pathsep)
     extensions = [''] # Always check the exact name first
     path_extensions = os.environ.get('PATHEXT', '.COM;.EXE;.BAT;.CMD').split(os.pathsep)
     extensions.extend([ext.lower() for ext in path_extensions])
@@ -36,28 +37,42 @@ def main():
     while True:
         sys.stdout.write("$ ")
         command = input().strip()
+        if not command:
+            continue
 
-        if command.lower() == "exit":
+        try:
+            tokens = shlex.split(command)
+        except ValueError:
+            # Handles unclosed quotes gracefully
+            print("Syntax error: unclosed quote")
+            continue
+        if not tokens:
+            continue
+        cmd = tokens[0]
+
+        if cmd == "exit":
             break
-        elif command.startswith("echo "):
-            print(command[5:])
-        elif command == "pwd":
+        elif cmd == "echo":
+            print(" ".join(tokens[1:]))
+        elif cmd == "pwd":
             print(os.getcwd())
 
-        elif command.startswith("type "):
-            command_param = command[5:].strip()
-            if command_param in builtin_commands:
-                print(f"{command_param} is a shell builtin")
-            else:
-                # locate executable files - go through every directory in PATH 
-                file_path = is_executable(command_param)
-                if file_path:
-                    print(f"{command_param} is {file_path}")
-                else: # no file located in the fir loop
-                    print(f"{command_param}: not found")
+        elif cmd == "type":
+            if len(tokens) > 1:
+                command_param = tokens[1]
+                if command_param in builtin_commands:
+                    print(f"{command_param} is a shell builtin")
+                else:
+                    # locate executable files - go through every directory in PATH 
+                    file_path = is_executable(command_param)
+                    if file_path:
+                        print(f"{command_param} is {file_path}")
+                    else: # no file located in the fir loop
+                        print(f"{command_param}: not found")
 
-        elif command.startswith("cd "):
-            folder_path = command[3:].strip()
+        elif cmd == "cd":
+            folder_path = tokens[1] if len(tokens) > 1 else "~"
+
             if folder_path.startswith("/"): # absolute path
                 _move_to_folder(folder_path)
             elif folder_path == "~": # home directory
@@ -68,13 +83,10 @@ def main():
                 _move_to_folder(target_path)
 
         else: # run a program
-            program_parts = command.split()
-            program_name = program_parts[0]
-
-            if is_executable(program_name):
-                subprocess.run(program_parts)
+            if is_executable(cmd):
+                subprocess.run(tokens)
             else:
-                sys.stdout.write(f"{command}: command not found\n")
+                sys.stdout.write(f"{cmd}: command not found\n")
 
 
 if __name__ == "__main__":
