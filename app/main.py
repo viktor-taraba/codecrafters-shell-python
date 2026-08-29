@@ -50,6 +50,7 @@ def main():
 
         elif command.startswith("cd "):
             folder_path = command[3:].strip()
+            if folder_path.startswth("/"): #absolute path
             if os.path.exists(folder_path):
                 os.chdir(folder_path)
             else:
