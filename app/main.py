@@ -61,7 +61,8 @@ def main():
             if folder_path.startswith("/"): # absolute path
                 _move_to_folder(folder_path)
             elif folder_path == "~": # home directory
-                _move_to_folder(os.getenv('USERPROFILE'))
+                home_dir = os.getenv('HOME') or os.getenv('USERPROFILE')
+                _move_to_folder(os.getenv(home_dir))
             else: # relative path
                 target_path = os.path.abspath(folder_path)
                 _move_to_folder(target_path)
