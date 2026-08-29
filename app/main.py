@@ -48,6 +48,13 @@ def main():
                 else: # no file located in the fir loop
                     print(f"{command_param}: not found")
 
+        elif command.startswith("cd "):
+            folder_path = command[3:].strip()
+            if os.path.exists(folder_path):
+                os.chdir(folder_path)
+            else:
+                print(f"cd: {folder_path}: No such file or directory")
+
         else: # run a program
             program_parts = command.split()
             program_name = program_parts[0]
