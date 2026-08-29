@@ -24,6 +24,14 @@ def is_executable(file_name):
         return None
 
 
+def _move_to_folder(folder_path: str):
+    "helper function to check whether folder exists and to move to it if true"
+    if os.path.exists(folder_path):
+        os.chdir(folder_path)
+    else:
+        print(f"cd: {folder_path}: No such file or directory")
+
+
 def main():
     while True:
         sys.stdout.write("$ ")
@@ -33,7 +41,7 @@ def main():
             break
         elif command.startswith("echo "):
             print(command[5:])
-        elif command.startswith("pwd"):
+        elif command == "pwd":
             print(os.getcwd())
 
         elif command.startswith("type "):
@@ -50,11 +58,11 @@ def main():
 
         elif command.startswith("cd "):
             folder_path = command[3:].strip()
-            if folder_path.startswth("/"): #absolute path
-            if os.path.exists(folder_path):
-                os.chdir(folder_path)
-            else:
-                print(f"cd: {folder_path}: No such file or directory")
+            if folder_path.startswith("/"): #absolute path
+                _move_to_folder(folder_path)
+            else: # relative path
+                target_path = os.path.abspath(folder_path)
+                _move_to_folder(target_path)
 
         else: # run a program
             program_parts = command.split()
